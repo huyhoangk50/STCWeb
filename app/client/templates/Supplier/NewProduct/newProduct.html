@@ -1,0 +1,277 @@
+<template name="new_product">
+    <div class="container">
+        <script>
+            // console.log("StarRatingBar");
+            // console.log(StarRatingBar);
+            class StarRatingBar extends HTMLElement {
+
+                get enable() {
+                    return this.getAttribute('enable') || false;
+                }
+
+                set enable(val) {
+                    this.setAttribute('enable', val);
+                }
+                get value() {
+                    return this.getAttribute('value') || 0;
+                }
+
+                set value(val) {
+                    this.setAttribute('value', val);
+                    this.highlight(this.value - 1);
+                }
+
+                get number() {
+                    return this.getAttribute('number') || 5;
+                }
+
+                set number(val) {
+                    this.setAttribute('number', val);
+
+                    this.stars = [];
+
+                    while (this.firstChild) {
+                        this.removeChild(this.firstChild);
+                    }
+
+                    for (let i = 0; i < this.number; i++) {
+                        let s = document.createElement('i');
+                        s.className = 'fa fa-star';
+                        // s.className = 'fa-star';
+                        this.appendChild(s);
+                        this.stars.push(s);
+                    }
+
+                    this.value = this.value;
+                }
+
+                highlight(index) {
+                    this.stars.forEach((star, i) => {
+                        star.classList.toggle('full', i <= index);
+                        star.classList.toggle('full', i <= index);
+                        if (i <= index) {
+                            star.setAttribute('style', 'color:yellow')
+                        } else {
+                            star.setAttribute('style', 'color:black')
+                        }
+                    });
+
+                }
+
+                constructor() {
+                    super();
+
+                    this.number = this.number;
+                    this.enable = this.enable;
+                    this.addEventListener('mousemove', e => {
+                        if (this.enable != 'false') {
+                            let box = this.getBoundingClientRect(),
+                                starIndex = Math.floor((e.pageX - box.left) / box.width * this.stars.length);
+
+                            this.highlight(starIndex);
+                        }
+                    });
+
+                    this.addEventListener('mouseout', () => {
+
+                        if (this.enable != 'false') {
+                            this.value = this.value;
+                        }
+                    });
+
+                    this.addEventListener('click', e => {
+                        if (this.enable != 'false') {
+                            let box = this.getBoundingClientRect(),
+                                starIndex = Math.floor((e.pageX - box.left) / box.width * this.stars.length);
+
+                            this.value = starIndex + 1;
+                            let rateEvent = new Event('rate');
+                            this.dispatchEvent(rateEvent);
+                        }
+                    });
+                }
+            }
+
+            customElements.define('x-star-rating', StarRatingBar);
+
+        </script>
+        <!-- header start -->
+        <div id="header" class="section">
+            <img alt="" class="img-circle" src="https://code.sololearn.com/Icons/Avatars/0.jpg">
+            <p style="color: blue">
+                <a href="./profile.html">Chào mừng STC</a>
+            </p>
+        </div>
+        <div class="card">
+            <div class="container-fliud">
+                <div class="wrapper row">
+                    <div class="preview col-md-6">
+                        <div class="preview-pic tab-content">
+                            <div class="tab-pane active" id="pic-1">
+                                <img src="https://image.ibb.co/fXiW2e/marvel_absolut_02.jpg" />
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="details col-md-6">
+                        <h3 class="product-title">{{categoryName}}</h3>
+                        <div class="rating">
+                        </div>
+
+                        <p class="product-description">
+                            {{categoryDescription}}
+                            <!-- <span><b>Nhà sản xuất:</b> Công ty TNHH Marvel - USA</span><br>
+                                <span><b>Nhà phân phối:</b> Công ty TNHH STC Việt Nam</span><br>
+                                <span><b>Xuất xứ:</b> Nhập khẩu chính hãng</span><br>
+                                <span><big><b>Đạt tiêu chuẩn ISO 9001:2000</b></big></span><br> -->
+                        </p>
+                        <form class="new-product-form">
+                            <div class="form-group">
+                                <label for="name"><b>Tên sản phẩm</b></label>
+                                <input class="form-control" name = 'productName' id="productName"/>
+                            </div> 
+                            <div class="form-group">
+                                <label for="description"><b>Mô tả sản phẩm</b></label>
+                                <input class="form-control" name = 'description' id="description"/>
+                            </div> 
+                            <button class="create-new-product btn btn-default" type="submit">Tạo sản phẩm mới</button>
+                        </form>
+
+                        
+                        <div class="form-actions fluid">
+                            <div class="form-actions fluid">
+                                <div class="col-md-offset-3 col-md-9">
+                                    <figure id="qrcode">
+                                    </figure>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end row  -->
+                <br>
+
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="rating-block">
+                            <h4>Trung bình đánh giá</h4>
+                            <h2 class="bold padding-bottom-7">{{ratingAverage}}
+                                <small>/ 5</small>
+                            </h2>
+                            <div id="total-rating"></div>
+                            <div>
+                                <span class="review-no" style="color: red">
+                                    <b>Đã có {{nRating}} đánh giá</b>
+                                </span>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <h4>Chi tiết đánh giá</h4>
+
+                        <!-- Rating Breakdown 5 stars  -->
+
+                        <div class="pull-left">
+                            <div class="pull-left" style="width:35px; line-height:1;">
+                                <div style="height:9px; margin:5px 0;">5
+                                    <span class="glyphicon glyphicon-star"></span>
+                                </div>
+                            </div>
+                            <div class="pull-left" style="width:180px;">
+                                <div class="progress" style="height:9px; margin:8px 0;">
+                                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="5" style="width: 100%">
+                                        <span class="sr-only">80% Complete (danger)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pull-right" style="margin-left:10px;">2 lượt</div>
+                        </div>
+
+                        <!-- Rating Breakdown 4 stars  -->
+
+
+                        <div class="pull-left">
+                            <div class="pull-left" style="width:35px; line-height:1;">
+                                <div style="height:9px; margin:5px 0;">4
+                                    <span class="glyphicon glyphicon-star"></span>
+                                </div>
+                            </div>
+                            <div class="pull-left" style="width:180px;">
+                                <div class="progress" style="height:9px; margin:8px 0;">
+                                    <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="4" aria-valuemin="0" aria-valuemax="5" style="width: 80%">
+                                        <span class="sr-only">80% Complete (danger)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pull-right" style="margin-left:10px;">1 lượt</div>
+                        </div>
+
+                        <!-- Rating Breakdown 3 stars  -->
+
+                        <div class="pull-left">
+                            <div class="pull-left" style="width:35px; line-height:1;">
+                                <div style="height:9px; margin:5px 0;">3
+                                    <span class="glyphicon glyphicon-star"></span>
+                                </div>
+                            </div>
+                            <div class="pull-left" style="width:180px;">
+                                <div class="progress" style="height:9px; margin:8px 0;">
+                                    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="3" aria-valuemin="0" aria-valuemax="5" style="width: 60%">
+                                        <span class="sr-only"> 80% Complete (danger)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pull-right" style="margin-left:10px;">1 lượt</div>
+                        </div>
+
+                        <!-- Rating Breakdown 2 stars  -->
+
+                        <div class="pull-left">
+                            <div class="pull-left" style="width:35px; line-height:1;">
+                                <div style="height:9px; margin:5px 0;">2
+                                    <span class="glyphicon glyphicon-star"></span>
+                                </div>
+                            </div>
+                            <div class="pull-left" style="width:180px;">
+                                <div class="progress" style="height:9px; margin:8px 0;">
+                                    <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="2" aria-valuemin="0" aria-valuemax="5" style="width: 40%">
+                                        <span class="sr-only">80% Complete (danger)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pull-right" style="margin-left:10px;">1 lượt</div>
+                        </div>
+
+                        <!-- Rating Breakdown 1 stars  -->
+
+
+                        <div class="pull-left">
+                            <div class="pull-left" style="width:35px; line-height:1;">
+                                <div style="height:9px; margin:5px 0;">1
+                                    <span class="glyphicon glyphicon-star"></span>
+                                </div>
+                            </div>
+                            <div class="pull-left" style="width:180px;">
+                                <div class="progress" style="height:9px; margin:8px 0;">
+                                    <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="5" style="width: 20%">
+                                        <span class="sr-only">80% Complete (danger)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pull-right" style="margin-left:10px;">1 lượt</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- First Comment Start-->
+
+
+        </div>
+        <!-- end container-fliud  -->
+
+
+    </div>
+    <!-- end container  -->
+</template>

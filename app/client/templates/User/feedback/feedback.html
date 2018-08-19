@@ -1,0 +1,506 @@
+<template name = "feedback">
+    <div class="container">
+        <script>
+            // console.log("StarRatingBar");
+            // console.log(StarRatingBar);
+            class StarRatingBar extends HTMLElement {
+                
+            get enable () {
+                return this.getAttribute('enable') || false;
+            }
+
+            set enable (val) {
+                this.setAttribute('enable', val);
+            }
+            get value () {
+                return this.getAttribute('value') || 0;
+            }
+
+            set value (val) {
+                this.setAttribute('value', val);
+                this.highlight(this.value - 1);
+            }
+
+            get number () {
+                return this.getAttribute('number') || 5;
+            }
+
+            set number (val) {
+                this.setAttribute('number', val);
+
+                this.stars = [];
+
+                while (this.firstChild) {
+                    this.removeChild(this.firstChild);
+                }
+
+                for (let i = 0; i < this.number; i++) {
+                    let s = document.createElement('i');
+                    s.className = 'fa fa-star';
+                    // s.className = 'fa-star';
+                    this.appendChild(s);
+                    this.stars.push(s);
+                }
+
+                this.value = this.value;
+            }
+
+            highlight (index) {
+                this.stars.forEach((star, i) => {
+                    star.classList.toggle('full', i <= index);
+                    star.classList.toggle('full', i <= index);
+                    if(i <= index){
+                        star.setAttribute('style', 'color:yellow')
+                    } else {
+                        star.setAttribute('style', 'color:black')
+                    }
+                }); 
+                
+            }
+
+            constructor () {
+                super();
+
+                this.number = this.number;
+                this.enable = this.enable;
+                this.addEventListener('mousemove', e => {
+                    if(this.enable !='false'){
+                        let box = this.getBoundingClientRect(),
+                            starIndex = Math.floor((e.pageX - box.left) / box.width * this.stars.length);
+
+                        this.highlight(starIndex);
+                    }
+                });
+
+                this.addEventListener('mouseout', () => {
+                    
+                    if(this.enable !='false'){
+                        this.value = this.value;
+                    }
+                });
+
+                this.addEventListener('click', e => {
+                    if(this.enable !='false'){
+                        let box = this.getBoundingClientRect(),
+                            starIndex = Math.floor((e.pageX - box.left) / box.width * this.stars.length);
+
+                        this.value = starIndex + 1; 
+                        let rateEvent = new Event('rate');
+                        this.dispatchEvent(rateEvent);
+                    }
+                });
+            }
+        }
+
+        customElements.define('x-star-rating', StarRatingBar);
+
+        </script>
+        <!-- header start -->
+        <div id="header" class="section">
+            <img alt="" class="img-circle" src="https://code.sololearn.com/Icons/Avatars/0.jpg">
+            <p style="color: blue"><a href="./profile.html">Chào mừng STC</a></p>
+        </div>
+        <div class="card">
+            <div class="container-fliud">
+                <div class="wrapper row">
+                    <div class="preview col-md-6">
+                        <div class="preview-pic tab-content">
+                        <div class="tab-pane active" id="pic-1"><img src="https://image.ibb.co/fXiW2e/marvel_absolut_02.jpg" /></div>
+                        </div>
+                        
+                    </div>
+                    <div class="details col-md-6">
+                        <h3 class="product-title">{{categoryName}}</h3>
+                        <div class="rating">
+                        </div>
+                        
+                        <p class="product-description">
+                            {{categoryDescription}}
+                            <!-- <span><b>Nhà sản xuất:</b> Công ty TNHH Marvel - USA</span><br>
+                            <span><b>Nhà phân phối:</b> Công ty TNHH STC Việt Nam</span><br>
+                            <span><b>Xuất xứ:</b> Nhập khẩu chính hãng</span><br>
+                            <span><big><b>Đạt tiêu chuẩn ISO 9001:2000</b></big></span><br> -->
+                        </p>
+
+                        <div class="feedback-label">
+                            <h2>Gửi <span class="reward highlight">đánh giá</span> - Nhận <span class="reward highlight">thưởng</span></h2>
+                        </div>
+
+                        <div class="action">
+                            <form class="feedback-form">
+                                <div class="row">
+
+                                    <div class="col-md-4">Tổng Quan:</div>
+                                    <div class="col-md-8">
+                                        <x-star-rating id="general-rating-bar" class="rating-bar" name="generaRatingBar" value="4" number="5" enable='true'></x-star-rating>
+                                    </div>
+                                    
+                                    <div class="col-md-4">Độ ngọt:</div>
+                                    <div class="col-md-8">
+                                        <x-star-rating id="tasting-bar" class="rating-bar" name="tastingBar" value="4" number="5" enable='true'></x-star-rating>
+                                    </div>
+                                    <div class="col-md-4">Thiết kế:</div>
+                                    <div class="col-md-8">
+                                        <x-star-rating id="ui-design-bar" class="rating-bar" name="uiDesignBar" value="4" number="5" enable='true'></x-star-rating>
+                                    </div>
+                                    <div class="col-md-4">Mùi hương:</div>
+                                    <div class="col-md-8">
+                                        <x-star-rating id="odor-rating-bar" class="rating-bar" name="odorRatingBar" value="4" number="5" enable='true'></x-star-rating>
+                                    </div>
+                                </div>
+                                    <!-- TODO: rating bar-->
+                                <div class="form-group">
+                                    <label for="comment"><b>Bạn có muốn chia sẻ cảm nhận của mình khi sử dụng sản phẩm của chúng tôi?</b></label>
+                                    <input class="form-control" rows="5" id="comment" name = "comment"/>
+                                </div>
+                                <div>
+                                    <button class="send-feed-back btn btn-default" type="submit">Gửi đánh giá của tôi</button>
+                                </div>
+                                <div>
+                                    <button class="check-code btn btn-default btn-success" type="button">Kiểm tra sản phẩm</button>    
+                                </div>
+                                
+
+                            </form>
+                            <!-- <button class="like btn btn-default" type="button"><span class="fa fa-heart"></span></button> -->
+                        </div>
+                    </div>
+                </div> <!-- end row  -->
+                <br>
+
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="rating-block">
+                            <h4>Trung bình đánh giá</h4>
+                            <h2 class="bold padding-bottom-7">{{ratingAverage}} <small>/ 5</small></h2>
+                            <div id="total-rating"></div>
+                            <!-- <button type="button" class="btn btn-warning btn-sm" aria-label="Left Align">
+                            <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                            </button>
+                            <button type="button" class="btn btn-warning btn-sm" aria-label="Left Align">
+                            <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                            </button>
+                            <button type="button" class="btn btn-warning btn-sm" aria-label="Left Align">
+                            <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                            </button>
+                            <button type="button" class="btn btn-default btn-grey btn-sm" aria-label="Left Align">
+                            <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                            </button>
+                            <button type="button" class="btn btn-default btn-grey btn-sm" aria-label="Left Align">
+                            <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                            </button> -->
+                            <div><span class="review-no" style="color: red"><b>Đã có {{nRating}} đánh giá</b></span></div>
+                            
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <h4>Chi tiết đánh giá</h4>
+
+                        <!-- Rating Breakdown 5 stars  -->
+
+                        <div class="pull-left">
+                            <div class="pull-left" style="width:35px; line-height:1;">
+                                <div style="height:9px; margin:5px 0;">5 <span class="glyphicon glyphicon-star"></span></div>
+                            </div>
+                            <div class="pull-left" style="width:180px;">
+                                <div class="progress" style="height:9px; margin:8px 0;">
+                                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="5" style="width: 100%">
+                                    <span class="sr-only">80% Complete (danger)</span>
+                                </div>
+                                </div>
+                            </div>
+                            <div class="pull-right" style="margin-left:10px;">2 lượt</div>
+                        </div>
+
+                        <!-- Rating Breakdown 4 stars  -->
+
+
+                        <div class="pull-left">
+                            <div class="pull-left" style="width:35px; line-height:1;">
+                                <div style="height:9px; margin:5px 0;">4 <span class="glyphicon glyphicon-star"></span></div>
+                            </div>
+                            <div class="pull-left" style="width:180px;">
+                                <div class="progress" style="height:9px; margin:8px 0;">
+                                <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="4" aria-valuemin="0" aria-valuemax="5" style="width: 80%">
+                                    <span class="sr-only">80% Complete (danger)</span>
+                                </div>
+                                </div>
+                            </div>
+                            <div class="pull-right" style="margin-left:10px;">1 lượt</div>
+                        </div>
+
+                        <!-- Rating Breakdown 3 stars  -->
+
+                        <div class="pull-left">
+                            <div class="pull-left" style="width:35px; line-height:1;">
+                                <div style="height:9px; margin:5px 0;">3 <span class="glyphicon glyphicon-star"></span></div>
+                            </div>
+                            <div class="pull-left" style="width:180px;">
+                                <div class="progress" style="height:9px; margin:8px 0;">
+                                <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="3" aria-valuemin="0" aria-valuemax="5" style="width: 60%">
+                                    <span class="sr-only"> 80% Complete (danger)</span>
+                                </div>
+                                </div>
+                            </div>
+                            <div class="pull-right" style="margin-left:10px;">1 lượt</div>
+                        </div>
+
+                        <!-- Rating Breakdown 2 stars  -->
+
+                        <div class="pull-left">
+                            <div class="pull-left" style="width:35px; line-height:1;">
+                                <div style="height:9px; margin:5px 0;">2 <span class="glyphicon glyphicon-star"></span></div>
+                            </div>
+                            <div class="pull-left" style="width:180px;">
+                                <div class="progress" style="height:9px; margin:8px 0;">
+                                <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="2" aria-valuemin="0" aria-valuemax="5" style="width: 40%">
+                                    <span class="sr-only">80% Complete (danger)</span>
+                                </div>
+                                </div>
+                            </div>
+                            <div class="pull-right" style="margin-left:10px;">1 lượt</div>
+                        </div>
+
+                        <!-- Rating Breakdown 1 stars  -->
+
+
+                        <div class="pull-left">
+                            <div class="pull-left" style="width:35px; line-height:1;">
+                                <div style="height:9px; margin:5px 0;">1 <span class="glyphicon glyphicon-star"></span></div>
+                            </div>
+                            <div class="pull-left" style="width:180px;">
+                                <div class="progress" style="height:9px; margin:8px 0;">
+                                <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="5" style="width: 20%">
+                                    <span class="sr-only">80% Complete (danger)</span>
+                                </div>
+                                </div>
+                            </div>
+                            <div class="pull-right" style="margin-left:10px;">1 lượt</div>
+                        </div>
+                    </div>          
+                </div>          
+            </div>
+                
+                <!-- First Comment Start-->
+
+
+                <div class="row">
+                    <div class="col-sm-7">
+                        <hr/>
+                        <div class="review-block">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <img src="https://image.ibb.co/npXYhe/Dinh_Ho_Nho_Thong.jpg" class="img-rounded">
+                                    <p></p>
+                                    <div class="review-block-name"><a href="./profile page 1.html"><big><div class="a">Dinh Ho</div></big></a></div>
+                                    
+                                    <div class="review-block-date"><div class="a"><b>17 Tháng 8, 2018</b><br/><i>1 ngày trước</i></div> </div>
+                                </div>
+                                <div class="col-sm-9">
+                                    <div class="review-block-rate">
+                                        <button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                    </div>
+                                    <br>
+                                    <div class="review-block-title"><b>Tôi hài lòng với sản phẩm</b></div><br>
+                                    <div class="review-block-description">Hương vị tuyệt vời! Cảm giác giống như Iron Man khi uống. Dù giá hơi cao so với túi tiền của sinh viên. </div>
+                                </div>
+                            </div>
+                            <hr/>
+
+                                            <!-- First Comment Ending-->
+
+
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <img src="https://image.ibb.co/cYwDhe/Nguyen_Huy_Hoang.jpg" class="img-rounded">
+                                    <p></p>
+                                    <div class="review-block-name"><a href="#"><big><div class="a">Hoang Nguyen</div></big></a></div>
+                                    <div class="review-block-date"><div class="a"><b>17 Tháng 8, 2018</b><br/><i>1 ngày trước</i></div> </div>
+                                </div>
+                                <div class="col-sm-9">
+                                    <div class="review-block-rate">
+                                        <button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-grey btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-grey btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                    </div>
+                                    <br>
+                                    <div class="review-block-title"><b>Sản phẩm khá tốt</b></div>
+                                    <br>
+                                    <div class="review-block-description">Hương vị khá ngon. Nhưng hơi ngọt khi uống. Mẫu mã sản phẩm dễ gây nhầm lẫn. Tôi muốn thành Batman nhưng mua nhầm thành Iron Man</div>
+                                </div>
+                            </div>
+                            <hr/>
+                            <!-- Second Comment Ending-->
+
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <img src="https://image.ibb.co/eqjh8K/Ngo_Thi_Phuong_Thao.jpg" class="img-rounded">
+                                    <p></p>
+                                    <div class="review-block-name"><a href="#"><big><div class="a">Thao Ngo</div></big></a></div>
+                                    <span></span>
+                                    <div class="review-block-date"><div class="a"><b>17 Tháng 8, 2018</b><br/><i>1 ngày trước</i></div> </div>
+                                </div>
+                                <div class="col-sm-9">
+                                    <div class="review-block-rate">
+                                        <button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-grey btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-grey btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-grey btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-grey btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                    </div>
+                                <br>
+                                    <div class="review-block-title"><b>Sản phẩm quá ngọt</b></div>
+                                    <br>
+                                    <div class="review-block-description">Mình khuyên là các bạn nữ đang giảm cân như mình không nên dùng. </div>
+                                    
+                                    
+                                </div>
+
+
+
+
+                            </div>
+                        </div>
+                        <hr>
+
+                        <div class="row">
+                                <div class="col-sm-3">
+                                    <img src="https://image.ibb.co/fFS8Fz/Trinh_Kim_Chi.jpg" class="img-rounded">
+                                    <p></p>
+                                    <div class="review-block-name"><a href="#"><big><div class="a">Chi Trinh</div></big></a></div>
+                                    <div class="review-block-date"><div class="a"><b>17 Tháng 8, 2018</b><br/><i>1 ngày trước</i></div> </div>
+                                </div>
+                                <div class="col-sm-9">
+                                    <div class="review-block-rate">
+                                        <button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                    </div>
+                                <br>
+                                    <div class="review-block-title"><b>Hương vị tuyệt vời</b></div>
+                                    <br>
+                                    <div class="review-block-description">Mình cực kì thích cảm giác sảng khoái sau khi uống. Chắc chắn sẽ tiếp tục ủng hộ</div>
+
+                    </div>
+                </div>
+                <hr>
+                                        <div class="row">
+                                <div class="col-sm-3">
+                                    <img src="https://image.ibb.co/d79mkz/nguyen_thanh_hai.jpg" class="img-rounded">
+                                    <p></p>
+                                    <div class="review-block-name"><a href="#"><big><div class="a">Hai Nguyen</div></big></a></div>
+                                    <div class="review-block-date"><div class="a"><b>17 Tháng 8, 2018</b><br/><i>1 ngày trước</i></div> </div>
+                                </div>
+                                <div class="col-sm-9">
+                                    <div class="review-block-rate">
+                                        <button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-grey btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-grey btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-grey btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                    </div>
+                                <br>
+                                    <div class="review-block-title"><b>Không ấn tượng</b></div>
+                                    <br>
+                                    <div class="review-block-description">Cảm nhận là bình thường. Bao bì xấu, không bắt mắt. </div>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <img src="https://image.ibb.co/b5TMkz/nguyen_anh_tu.jpg" class="img-rounded">
+                                    <p></p>
+                                    <div class="review-block-name"><a href="#"><big><div class="a">Tu Nguyen</div></big></a></div>
+                                    <div class="review-block-date"><div class="a"><b>17 Tháng 8, 2018</b><br/><i>1 ngày trước</i></div> </div>
+                                </div>
+                                <div class="col-sm-9">
+                                    <div class="review-block-rate">
+                                        <button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-grey btn-xs" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                        </button>
+                                    </div>
+                                <br>
+                                    <div class="review-block-title"><b>Sản phẩm tốt</b></div>
+                                    <br>
+                                    <div class="review-block-description">Mình ít khi dùng sản phẩm của Marvel nhưng sản phẩm này đã thuyết phục mình. Điểm trừ là thiết kế chai chưa tốt, dễ bị rơi khi cầm.</div>
+                                </div>
+                            </div>
+                        </div>
+            </div> <!-- end container-fliud  -->
+
+
+        </div><!-- end card  -->
+    </div> <!-- end container  -->
+</template>
